@@ -1,9 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { GlobalStyles } from "../constants/styles";
-import { useLayoutEffect } from "react";
 
 function SettingScreen() {
-
   return (
     <View style={styles.rootContainer}>
       <View style={styles.warningContainer}>
@@ -19,7 +17,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: GlobalStyles.colors.background,
+    backgroundColor: "gray",
   },
   warningContainer: {
     width: "100%",

@@ -8,5 +8,6 @@ export const GlobalStyles = {
     text: "#323232",
     text50: "#4B4B4B",
     opacity: "rgba(50, 50, 50, .34)",
+    border: "#EBEBEB"
   },
 };
