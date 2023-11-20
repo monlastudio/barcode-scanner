@@ -1,8 +1,9 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 import IconButton from "../UI/IconButton";
+import { formatDateToISO } from "../../utils/date";
 
-function HistoryItem({ id, barcode, code, type, date }) {
+function HistoryItem({ id, device_name, created_at, onDelete }) {
   return (
     <View style={styles.itemContainer}>
       <View style={styles.imageContainer}>
@@ -13,12 +14,12 @@ function HistoryItem({ id, barcode, code, type, date }) {
         />
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.codeText}>{code}</Text>
-        <Text style={styles.typeText}>{type}</Text>
-        <Text style={styles.dateText}>{date}</Text>
+        <Text style={styles.codeText}>{id}</Text>
+        <Text style={styles.typeText}>{device_name}</Text>
+        <Text style={styles.dateText}>{formatDateToISO(created_at)}</Text>
       </View>
       <View>
-        <IconButton icon="trash" size={24} color={GlobalStyles.colors.error}/>
+        <IconButton icon="trash" size={24} color={GlobalStyles.colors.error} onPress={onDelete}/>
       </View>
     </View>
   );

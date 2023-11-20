@@ -5,6 +5,7 @@ import { Dropdown } from "react-native-element-dropdown";
 
 import IconButton from "../components/UI/IconButton";
 import ResultBottomSheet from "../components/UI/ResultBottomSheet";
+import ElevatedButton from "../components/UI/ElevatedButton";
 
 function ScanScreen() {
   const dropdownData = [
@@ -13,13 +14,20 @@ function ScanScreen() {
   ];
 
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  const [scanData, setScanData] = useState(null);
   const [dropdownValue, setDropdownValue] = useState(dropdownData[0].value);
   const [isFocus, setIsFocus] = useState(false);
 
   const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
+    // Un-comment the code below if use in real devices
+    // setScanData(data);
+
+    setScanData(1);
   };
+
+  function onCloseHandler() {
+    setScanData(null);
+  }
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -67,17 +75,18 @@ function ScanScreen() {
       </View>
       <View style={styles.barcodeBox}>
         <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          onBarCodeScanned={scanData !== null ? undefined : handleBarCodeScanned}
           style={styles.barcode}
           type={dropdownValue}
         />
       </View>
       <View style={styles.modalContainer}>
+        <ElevatedButton onPress={handleBarCodeScanned}>Fake scanned (AVD only)</ElevatedButton>
         <Text style={styles.modalText}>
-          {scanned ? "Scanning..." : "Point your camera at a barcode"}
+          {scanData !== null ? "Scanning..." : "Point your camera at a barcode"}
         </Text>
       </View>
-      <ResultBottomSheet trigger={scanned}/>
+      <ResultBottomSheet data={scanData} onClosed={onCloseHandler}/>
     </SafeAreaView>
   );
 }
@@ -149,6 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   modalText: {
+    marginTop: 16,
     color: "white",
     fontFamily: "Montserrat-Regular",
     fontSize: 16,

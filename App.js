@@ -12,44 +12,54 @@ import * as SplashScreen from "expo-splash-screen";
 import ScanScreen from "./screens/ScanScreen";
 import ScanHistoryScreen from "./screens/ScanHistoryScreen";
 import SettingScreen from "./screens/SettingScreen";
+import { Provider } from "react-redux";
+import { store } from "./store/redux/store";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function BarcodeScannerHome() {
-  return <BottomTabs.Navigator
-    screenOptions={{
-      headerTitleAlign: "center",
-    }}
-  >
-    <BottomTabs.Screen
-      name="ScanScreen"
-      component={ScanScreen}
-      options={{
-        headerShown: false,
-        tabBarLabel: "Scan",
-        tabBarIcon: ({ color, size }) => <Ionicons name="md-scan-outline" size={size} color={color} />,
+  return (
+    <BottomTabs.Navigator
+      screenOptions={{
+        headerTitleAlign: "center",
       }}
-    />
-    <BottomTabs.Screen
-      name="HistoryScreen"
-      component={ScanHistoryScreen}
-      options={{
-        title: "Scan history",
-        tabBarLabel: "History",
-        tabBarIcon: ({ color, size }) => <Ionicons name="md-time-outline" size={size} color={color} />,
-      }}
-    />
-    <BottomTabs.Screen
-      name="SettingScreen"
-      component={SettingScreen}
-      options={{
-        title: "Settings",
-        tabBarLabel: "Settings",
-        tabBarIcon: ({ color, size }) => <Ionicons name="md-settings-outline" size={size} color={color} />,
-      }}
-    />
-  </BottomTabs.Navigator>;
+    >
+      <BottomTabs.Screen
+        name="ScanScreen"
+        component={ScanScreen}
+        options={{
+          headerShown: false,
+          tabBarLabel: "Scan",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="md-scan-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="HistoryScreen"
+        component={ScanHistoryScreen}
+        options={{
+          title: "Scan history",
+          tabBarLabel: "History",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="md-time-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="SettingScreen"
+        component={SettingScreen}
+        options={{
+          title: "Settings",
+          tabBarLabel: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="md-settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </BottomTabs.Navigator>
+  );
 }
 
 export default function App() {
@@ -88,15 +98,17 @@ export default function App() {
     <GestureHandlerRootView style={styles.rootContainer}>
       <View style={styles.rootContainer} onLayout={onLayoutRootView}>
         <StatusBar style="auto" />
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="BarcodeScanner"
-              component={BarcodeScannerHome}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <Provider store={store}>
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="BarcodeScanner"
+                component={BarcodeScannerHome}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </Provider>
       </View>
     </GestureHandlerRootView>
   );

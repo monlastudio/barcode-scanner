@@ -15,6 +15,9 @@ function DetailRow({ label, value }) {
 }
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+  },
   detailRow: {
     flexDirection: "row",
     alignItems: "center",

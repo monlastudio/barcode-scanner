@@ -1,8 +1,11 @@
 import { Pressable, StyleSheet, View, Text } from "react-native";
 
-function ElevatedButton({ children, style }) {
+function ElevatedButton({ children, style, onPress }) {
   return (
-    <Pressable style={({ pressed }) => [pressed && styles.pressed, style]}>
+    <Pressable
+      style={({ pressed }) => [pressed && styles.pressed, style]}
+      onPress={onPress}
+    >
       <View style={styles.buttonContainer}>
         <Text style={styles.buttonText}>{children}</Text>
       </View>

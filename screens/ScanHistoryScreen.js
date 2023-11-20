@@ -4,43 +4,26 @@ import { useLayoutEffect } from "react";
 import HistoryItem from "../components/ScanHistory/HistoryItem";
 import { GlobalStyles } from "../constants/styles";
 import IconButton from "../components/UI/IconButton";
-
-const DUMMY_DATA = [
-  {
-    id: 1,
-    barcode: "123",
-    code: "020418191992",
-    type: "Type of code",
-    date: "2020-06-02 07:10:15",
-  },
-  {
-    id: 2,
-    barcode: "123",
-    code: "020418191992",
-    type: "Type of code",
-    date: "2020-06-02 07:10:15",
-  },
-  {
-    id: 3,
-    barcode: "123",
-    code: "020418191992",
-    type: "Type of code",
-    date: "2020-06-02 07:10:15",
-  },
-  {
-    id: 4,
-    barcode: "123",
-    code: "020418191992",
-    type: "Type of code",
-    date: "2020-06-02 07:10:15",
-  },
-];
-
-function renderHistoryItem(itemData) {
-  return <HistoryItem {...itemData.item} />;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { removeHistory } from "../store/redux/histories";
 
 function ScanHistoryScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const historiesList = useSelector((state) => state.histories.data);
+
+  function onHistoryDeleteHandler(id) {
+    dispatch(removeHistory({ id: id }));
+  }
+
+  function renderHistoryItem(itemData) {
+    return (
+      <HistoryItem
+        {...itemData.item}
+        onDelete={onHistoryDeleteHandler.bind(this, itemData.item.id)}
+      />
+    );
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: ({ tintColor }) => (
@@ -49,10 +32,23 @@ function ScanHistoryScreen({ navigation }) {
     });
   }, [navigation]);
 
+  if (historiesList.length === 0) {
+    return (
+      <View
+        style={[
+          styles.rootContainer,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <Text>No scanned history here</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.rootContainer}>
       <FlatList
-        data={DUMMY_DATA}
+        data={historiesList}
         renderItem={renderHistoryItem}
         keyExtractor={(item) => item.id}
         style={styles.listContainer}

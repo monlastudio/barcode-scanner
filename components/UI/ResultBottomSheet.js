@@ -1,19 +1,22 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useCallback, useMemo, useRef, useEffect, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { GlobalStyles } from "../../constants/styles";
+import { getProductWithCode } from "../../server/http";
 import IconButton from "./IconButton";
 import ElevatedButton from "./ElevatedButton";
 import DetailRow from "../Scanner/DetailRow";
+import { formatDateToISO } from "../../utils/date";
+import { useDispatch } from "react-redux";
+import { addHistory } from "../../store/redux/histories";
 
-function ResultBottomSheet({ trigger, onClosed }) {
+function ResultBottomSheet({ data, onClosed }) {
+  const dispatch = useDispatch();
   const bottomSheetRef = useRef(null);
+  const [scannedProduct, setScannedProduct] = useState(null);
+  const snapPoints = useMemo(() => ["60%"], []);
 
-  // variables
-  const snapPoints = useMemo(() => ["50%"], []);
-
-  // callbacks
   const handleSheetChanges = useCallback(() => {
     if (bottomSheetRef != null) {
       bottomSheetRef.current.snapToIndex(0);
@@ -21,10 +24,21 @@ function ResultBottomSheet({ trigger, onClosed }) {
   }, []);
 
   useEffect(() => {
-    if (trigger) {
-      handleSheetChanges();
+    if (data) {
+      getProduct().then(() => {
+        handleSheetChanges();
+      });
     }
-  }, [trigger]);
+  }, [data]);
+
+  async function getProduct() {
+    const result = await getProductWithCode(data);
+
+    if (result !== null && result.devices.length > 0) {
+      setScannedProduct(result.devices[0]);
+      dispatch(addHistory({data: result.devices[0]}));
+    }
+  }
 
   function closeButtonHandler() {
     bottomSheetRef.current.close();
@@ -40,39 +54,60 @@ function ResultBottomSheet({ trigger, onClosed }) {
       handleIndicatorStyle={{ display: "none" }}
       handleStyle={{ padding: 0 }}
     >
-      <View style={styles.contentContainer}>
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>1 match found</Text>
-          <IconButton
-            icon="md-chevron-down"
-            size={24}
-            onPress={closeButtonHandler}
-          />
-        </View>
-        <View style={styles.bodyContainer}>
-          <View style={styles.detailContainer}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={require("../../assets/images/medic.jpg")}
-                contentFit="contain"
-              />
-            </View>
-            <View style={styles.contentContainer}>
-              <Text style={styles.sectionTitle}>Test Tube</Text>
-              <Text style={{ fontFamily: "Montserrat-Regular" }}>
-                A test tube, also known as a culture tube or sample tube, is a
-                common piece of laboratory glassware consisting.
-              </Text>
-            </View>
+      {scannedProduct !== null ? (
+        <View style={styles.contentContainer}>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>1 match found</Text>
+            <IconButton
+              icon="md-chevron-down"
+              size={24}
+              onPress={closeButtonHandler}
+            />
           </View>
-          <DetailRow label="CODE" value="392387498347242" />
-          <DetailRow label="MANUFACTURED BY" value="Company name" />
-          <DetailRow label="CREATION DATE" value="2018-01-01" />
-          <DetailRow label="EXPIRATION DATE" value="2023-01-01" />
-          <ElevatedButton style={{ marginTop: 16 }}>Close</ElevatedButton>
+          <View style={styles.bodyContainer}>
+            <View style={styles.detailContainer}>
+              <View style={styles.imageContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../../assets/images/medic.jpg")}
+                  contentFit="contain"
+                />
+              </View>
+              <View style={styles.contentContainer}>
+                <Text style={styles.sectionTitle}>
+                  {scannedProduct.device_name}
+                </Text>
+                <Text style={{ fontFamily: "Montserrat-Regular" }}>
+                  {scannedProduct.device_description}
+                </Text>
+              </View>
+            </View>
+            <DetailRow label="CODE" value={scannedProduct.id} />
+            <DetailRow
+              label="MANUFACTURED BY"
+              value={scannedProduct.manufacture ?? "-"}
+            />
+            <DetailRow
+              label="CREATION DATE"
+              value={formatDateToISO(scannedProduct.created_at)}
+            />
+            <DetailRow
+              label="EXPIRATION DATE"
+              value={formatDateToISO(scannedProduct.updated_at)}
+            />
+            <ElevatedButton
+              style={{ marginTop: 16 }}
+              onPress={closeButtonHandler}
+            >
+              Close
+            </ElevatedButton>
+          </View>
         </View>
-      </View>
+      ) : (
+        <View style={styles.notFoundContainer}>
+          <Text style={styles.warningText}>No product found with the code</Text>
+        </View>
+      )}
     </BottomSheet>
   );
 }
@@ -80,6 +115,11 @@ function ResultBottomSheet({ trigger, onClosed }) {
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
+  },
+  notFoundContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   sectionContainer: {
     flexDirection: "row",
@@ -102,7 +142,7 @@ const styles = StyleSheet.create({
   detailContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "start",
     marginBottom: 16,
   },
   imageContainer: {
@@ -114,6 +154,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     borderRadius: 2,
+  },
+  warningText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
