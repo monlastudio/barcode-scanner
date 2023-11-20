@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(50, 50, 50, 0.34)",
     padding: 16,
     alignItems: "center",
-    justifyContent: "center",
   },
   topBar: {
     position: "absolute",
@@ -131,7 +130,6 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     borderRadius: 8,
-    backgroundColor: "tomato",
   },
   barcode: {
     height: 600,

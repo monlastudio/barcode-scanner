@@ -17,47 +17,39 @@ const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function BarcodeScannerHome() {
-  return (
-    <BottomTabs.Navigator
-      screenOptions={{
-        headerTitleAlign: "center",
+  return <BottomTabs.Navigator
+    screenOptions={{
+      headerTitleAlign: "center",
+    }}
+  >
+    <BottomTabs.Screen
+      name="ScanScreen"
+      component={ScanScreen}
+      options={{
+        headerShown: false,
+        tabBarLabel: "Scan",
+        tabBarIcon: ({ color, size }) => <Ionicons name="md-scan-outline" size={size} color={color} />,
       }}
-    >
-      <BottomTabs.Screen
-        name="ScanScreen"
-        component={ScanScreen}
-        options={{
-          headerShown: false,
-          tabBarLabel: "Scan",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="md-scan-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <BottomTabs.Screen
-        name="HistoryScreen"
-        component={ScanHistoryScreen}
-        options={{
-          title: "Scan history",
-          tabBarLabel: "History",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="md-time-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <BottomTabs.Screen
-        name="SettingScreen"
-        component={SettingScreen}
-        options={{
-          title: "Settings",
-          tabBarLabel: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="md-settings-outline" size={size} color={color} />
-          ),
-        }}
-      />
-    </BottomTabs.Navigator>
-  );
+    />
+    <BottomTabs.Screen
+      name="HistoryScreen"
+      component={ScanHistoryScreen}
+      options={{
+        title: "Scan history",
+        tabBarLabel: "History",
+        tabBarIcon: ({ color, size }) => <Ionicons name="md-time-outline" size={size} color={color} />,
+      }}
+    />
+    <BottomTabs.Screen
+      name="SettingScreen"
+      component={SettingScreen}
+      options={{
+        title: "Settings",
+        tabBarLabel: "Settings",
+        tabBarIcon: ({ color, size }) => <Ionicons name="md-settings-outline" size={size} color={color} />,
+      }}
+    />
+  </BottomTabs.Navigator>;
 }
 
 export default function App() {

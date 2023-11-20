@@ -7,7 +7,7 @@ import IconButton from "./IconButton";
 import ElevatedButton from "./ElevatedButton";
 import DetailRow from "../Scanner/DetailRow";
 
-function ResultBottomSheet({ trigger }) {
+function ResultBottomSheet({ trigger, onClosed }) {
   const bottomSheetRef = useRef(null);
 
   // variables
@@ -28,6 +28,7 @@ function ResultBottomSheet({ trigger }) {
 
   function closeButtonHandler() {
     bottomSheetRef.current.close();
+    onClosed();
   }
 
   return (
