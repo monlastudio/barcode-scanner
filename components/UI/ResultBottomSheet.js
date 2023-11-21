@@ -9,7 +9,7 @@ import ElevatedButton from "./ElevatedButton";
 import DetailRow from "../Scanner/DetailRow";
 import { formatDateToISO } from "../../utils/date";
 import { useDispatch } from "react-redux";
-import { addHistory } from "../../store/redux/histories";
+import { addDataToAsyncStorage } from "../../store/redux/histories";
 
 function ResultBottomSheet({ data, onClosed }) {
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ function ResultBottomSheet({ data, onClosed }) {
 
     if (result !== null && result.devices.length > 0) {
       setScannedProduct(result.devices[0]);
-      dispatch(addHistory({data: result.devices[0]}));
+      dispatch(addDataToAsyncStorage(result.devices[0]));
     }
   }
 
@@ -54,7 +54,7 @@ function ResultBottomSheet({ data, onClosed }) {
       handleIndicatorStyle={{ display: "none" }}
       handleStyle={{ padding: 0 }}
     >
-      {scannedProduct !== null ? (
+      {scannedProduct != null ? (
         <View style={styles.contentContainer}>
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>1 match found</Text>

@@ -1,18 +1,28 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 import HistoryItem from "../components/ScanHistory/HistoryItem";
 import { GlobalStyles } from "../constants/styles";
-import IconButton from "../components/UI/IconButton";
 import { useDispatch, useSelector } from "react-redux";
-import { removeHistory } from "../store/redux/histories";
+import {
+  fetchDataFromAsyncStorage,
+  removeDataFromAsyncStorage,
+} from "../store/redux/histories";
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuProvider,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 function ScanHistoryScreen({ navigation }) {
   const dispatch = useDispatch();
-  const historiesList = useSelector((state) => state.histories.data);
+  const { data, error } = useSelector((state) => state.histories);
 
   function onHistoryDeleteHandler(id) {
-    dispatch(removeHistory({ id: id }));
+    dispatch(removeDataFromAsyncStorage(id));
   }
 
   function renderHistoryItem(itemData) {
@@ -24,15 +34,36 @@ function ScanHistoryScreen({ navigation }) {
     );
   }
 
+  useEffect(() => {
+    dispatch(fetchDataFromAsyncStorage());
+    console.log(data);
+  }, [dispatch]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: ({ tintColor }) => (
-        <IconButton icon="ellipsis-vertical" size={20} color={tintColor} />
+        <MenuProvider>
+          <Menu>
+            <MenuTrigger
+              customStyles={{
+                triggerWrapper: {
+                  top: 16,
+                  right: 16,
+                },
+              }}
+            >
+              <Ionicons name="ellipsis-vertical" size={20} color={tintColor} />
+            </MenuTrigger>
+            <MenuOptions>
+              <MenuOption onSelect={() => alert(`Save`)} text="Delete all" />
+            </MenuOptions>
+          </Menu>
+        </MenuProvider>
       ),
     });
   }, [navigation]);
 
-  if (historiesList.length === 0) {
+  if (data == null) {
     return (
       <View
         style={[
@@ -40,7 +71,7 @@ function ScanHistoryScreen({ navigation }) {
           { justifyContent: "center", alignItems: "center" },
         ]}
       >
-        <Text>No scanned history here</Text>
+        <Text>{error ?? "No scanned history here"}</Text>
       </View>
     );
   }
@@ -48,7 +79,7 @@ function ScanHistoryScreen({ navigation }) {
   return (
     <View style={styles.rootContainer}>
       <FlatList
-        data={historiesList}
+        data={data}
         renderItem={renderHistoryItem}
         keyExtractor={(item) => item.id}
         style={styles.listContainer}
